@@ -1,6 +1,10 @@
 import * as React from 'react'
 import { render } from 'react-dom'
+import styled from 'styled-components'
 
-const Main = (<h1>Electron Trello</h1>)
+const Header = styled.h1`
+  color: red;
+`
+const Main = (<Header>React Trello</Header>)
 
 render(Main, document.getElementById('app'))
