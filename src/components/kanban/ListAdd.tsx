@@ -1,6 +1,7 @@
-import React, { useState }from 'react'
+import React, { useState, useContext }from 'react'
 import styled from 'styled-components'
-import useStateWithStorage from '../hooks/use_state_kanban_list'
+import AppContext from '../contexts/AppContext'
+import { StorageKey } from '../utils'
 
 const Form = styled.form`
   margin: 0 10px auto;
@@ -46,14 +47,10 @@ const Button = styled.button<{ isTitleExists: Boolean }>`
   }
 `
 
-const StorageKey: string = 'trello-lists'
 
 const List: React.FC = () => {
+  const {state , setState} = useContext(AppContext)
   const [title, setTitle] = useState<string>("")
-  const [list, setList] = useStateWithStorage({
-    title: "",
-    cards: []
-  }, StorageKey)
   // listが変化してるからコンポーネントが再描画される。カスタムフック側のvalueがlistに入った時点で繋がる。
   const [isEditing, setIsEditing] = useState<Boolean>(false)
   const [isTitleExists, setTitleExists] = useState<Boolean>(false)
@@ -65,12 +62,15 @@ const List: React.FC = () => {
     <>
     <Form onSubmit={(e) => {
       e.preventDefault()
-      setList({
-        title: title,
-        cards: [
-          {body:"aaa"},
-          {body:"bbb"},
-        ]
+      setState(() => {
+        const preValue = [...state]
+        preValue.push({
+          title: title,
+          cards: [{body: "aaa"}]
+        })
+        localStorage.setItem(StorageKey, JSON.stringify(preValue))
+        setTitle("")
+        return [...preValue]
       })
     }}>
       <Input

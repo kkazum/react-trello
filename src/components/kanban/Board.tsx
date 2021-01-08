@@ -1,6 +1,8 @@
-import * as React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import ListAdd from './ListAdd'
+import { List, StorageKey } from '../utils'
+import AppContext from '../contexts/AppContext'
 
 const Wrapper = styled.main `
   background-image: url("./star.jpg");
@@ -27,16 +29,20 @@ const ListIndex = styled.p `
 `
 
 const Board: React.FC = () => {
+  const [state, setState] = useState<Array<List>>(JSON.parse(localStorage.getItem(StorageKey)!) || [])
+
   return (
+  <AppContext.Provider value={{ state, setState }}>
     <Wrapper>
       <Header>
         React Trello
       </Header>
       <Main>
         <ListIndex className="info-line">All: 0 tasks</ListIndex>
-        <ListAdd />
+        <ListAdd/>
       </Main>
     </Wrapper>
+  </AppContext.Provider>
   )
 }
 
