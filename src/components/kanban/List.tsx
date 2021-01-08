@@ -1,8 +1,9 @@
 import React, { useContext} from 'react'
 import styled from 'styled-components'
 import AppContext from '../contexts/AppContext'
-import { StorageKey } from '../utils'
+import { Card, StorageKey } from '../utils'
 import CardAdd from './CardAdd'
+import BoardCard from './Card'
 
 const ListContainer = styled.div `
   margin: 0 5px auto;
@@ -49,18 +50,31 @@ interface Props {
 
 const List: React.FC<Props> = (props) => {
   const {state , setState} = useContext(AppContext)
+  const { title, listIndex } = props
   return (
     <ListContainer>
       <ListHeader>
-        <ListTitle>{ props.title }</ListTitle>
+        <ListTitle>{ title }</ListTitle>
         <DeleteList onClick={() => setState(() => {
           const preValue = [...state]
-          preValue.splice(props.listIndex, 1)
+          preValue.splice(listIndex, 1)
           localStorage.setItem(StorageKey, JSON.stringify(preValue))
           return [...preValue]
         })}>×</DeleteList>
       </ListHeader>
-      <CardAdd listIndex={props.listIndex} />
+        {
+          state[listIndex].cards.map((ele: Card, index) => {
+            return (
+              <BoardCard
+                body={ele.body}
+                key={index}
+                cardIndex={index}
+                listIndex={listIndex}
+              />
+            )
+          })
+        }
+      <CardAdd listIndex={listIndex} />
     </ListContainer>
   )
 }

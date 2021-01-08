@@ -3,7 +3,7 @@ export interface List {
   cards: Array<Card>
 }
 
-interface Card {
+export interface Card {
   body: string
 }
 
