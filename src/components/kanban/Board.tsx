@@ -1,6 +1,6 @@
 import * as React from 'react'
 import styled from 'styled-components'
-
+import ListAdd from './ListAdd'
 
 const Wrapper = styled.main `
   background-image: url("./star.jpg");
@@ -22,15 +22,19 @@ const Main = styled.main `
   height: 100%;
 `
 
+const ListIndex = styled.p `
+  display: flex;
+`
 
-const Board = () => {
+const Board: React.FC = () => {
   return (
     <Wrapper>
       <Header>
         React Trello
       </Header>
       <Main>
-        <p className="info-line">All: 0 tasks</p>
+        <ListIndex className="info-line">All: 0 tasks</ListIndex>
+        <ListAdd />
       </Main>
     </Wrapper>
   )

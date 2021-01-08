@@ -1,7 +1,9 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.tsx',
+  entry: {
+    kanban: './src/index.tsx'
+  },
   module: {
     rules: [
       {
@@ -16,7 +18,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'index.js',
+    filename: '[name].js',
     publicPath: 'dist/',
   },
   devServer: {
