@@ -2,6 +2,7 @@ import React, { useContext} from 'react'
 import styled from 'styled-components'
 import AppContext from '../contexts/AppContext'
 import { StorageKey } from '../utils'
+import CardAdd from './CardAdd'
 
 const ListContainer = styled.div `
   margin: 0 5px auto;
@@ -59,6 +60,7 @@ const List: React.FC<Props> = (props) => {
           return [...preValue]
         })}>×</DeleteList>
       </ListHeader>
+      <CardAdd listIndex={props.listIndex} />
     </ListContainer>
   )
 }

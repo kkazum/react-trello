@@ -1,10 +1,8 @@
 import React, { useState, useContext }from 'react'
 import styled from 'styled-components'
 import AppContext from '../contexts/AppContext'
-import { StorageKey } from '../utils'
 
 const Form = styled.form`
-  margin: 0 10px auto;
   display: inline-block;
   flex-direction: column;
   align-items: flex-start;
@@ -31,10 +29,10 @@ const Input = styled.input<{ isEditing: Boolean }>`
   }
 `
 
-const Button = styled.button<{ isTitleExists: Boolean }>`
+const Button = styled.button<{ isBodyExists: Boolean }>`
   margin-top: 15px;
   padding: 15px 18px;
-  background-color:${(props) => (props.isTitleExists ? "#00d78f": "#999")};
+  background-color:${(props) => (props.isBodyExists ? "#00d78f": "#999")};
   border: none;
   border-radius: 8px;
   font-family: "Noto Sans Japanese", "Noto Sans", 'system-ui', sans-serif;
@@ -47,50 +45,55 @@ const Button = styled.button<{ isTitleExists: Boolean }>`
   }
 `
 
+const StorageKey: string = 'trello-lists'
 
-const List: React.FC = () => {
-  const {state , setState} = useContext(AppContext)
-  const [title, setTitle] = useState<string>("")
-  // listが変化してるからコンポーネントが再描画される。カスタムフック側のvalueがlistに入った時点で繋がる。
+interface Props {
+  listIndex: number
+}
+
+const CardAdd: React.FC<Props> = (props) => {
+  const [body, setBody] = useState<string>("")
   const [isEditing, setIsEditing] = useState<Boolean>(false)
-  const [isTitleExists, setTitleExists] = useState<Boolean>(false)
+  const [isBodyExists, setBodyExists] = useState<Boolean>(false)
 
   const editing = (): void => setIsEditing(!isEditing)
-  const titleExists = (): void => setTitleExists(!isTitleExists)
+  const titleExists = (): void => setBodyExists(!isBodyExists)
+
+  const { state, setState } = useContext(AppContext)
 
   return (
     <>
     <Form onSubmit={(e) => {
       e.preventDefault()
       setState(() => {
-        const preValue = [...state]
-        preValue.push({
-          title: title,
-          cards: []
+        const preValue = state
+        preValue[props.listIndex].cards.push({
+          body: body,
         })
         localStorage.setItem(StorageKey, JSON.stringify(preValue))
-        setTitle("")
+        setBody("")
         return [...preValue]
       })
     }}>
       <Input
         onFocus={() => editing()}
         onBlur={() => editing()}
-        onChange={e => setTitle(e.target.value)}
+        onChange={e => setBody(e.target.value)}
         type="text"
-        value={title}
-        placeholder="Add new list"
+        value={body}
+        placeholder="Add new card"
         isEditing={isEditing}
       />
       <Button
         onMouseOver={() => titleExists()}
         onMouseOut={() => titleExists()}
-        isTitleExists={isTitleExists} type="submit">
+        isBodyExists={isBodyExists} type="submit">
         Add
       </Button>
     </Form>
+
   </>
   )
 }
 
-export default List
+export default CardAdd
