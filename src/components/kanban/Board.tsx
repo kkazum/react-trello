@@ -3,10 +3,12 @@ import styled from 'styled-components'
 import ListAdd from './ListAdd'
 import { List, StorageKey } from '../utils'
 import AppContext from '../contexts/AppContext'
+import BoardList from './List'
 
 const Wrapper = styled.main `
   background-image: url("./star.jpg");
   background-size:  cover;
+  overflow-x: scroll;
 `
 
 const Header = styled.header`
@@ -24,8 +26,13 @@ const Main = styled.main `
   height: 100%;
 `
 
-const ListIndex = styled.p `
+const ListIndex = styled.div `
   display: flex;
+`
+
+const InfoLine = styled.p `
+  margin: 20px;
+  font-size: 20px;
 `
 
 const Board: React.FC = () => {
@@ -38,8 +45,22 @@ const Board: React.FC = () => {
         React Trello
       </Header>
       <Main>
-        <ListIndex className="info-line">All: 0 tasks</ListIndex>
-        <ListAdd/>
+        <InfoLine>
+          All: 0 tasks
+        </InfoLine>
+        <ListIndex className="info-line">
+          {
+            state.map((ele: List, index) => {
+              return (
+                <BoardList
+                  title={ele.title}
+                  key={index}
+                  listIndex={index} />
+              )
+            })
+          }
+          <ListAdd />
+        </ListIndex>
       </Main>
     </Wrapper>
   </AppContext.Provider>
