@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useContext} from 'react'
 import styled from 'styled-components'
+import AppContext from '../contexts/AppContext'
+import { StorageKey } from '../utils'
 
 const ListContainer = styled.div `
   margin: 0 5px auto;
@@ -45,11 +47,17 @@ interface Props {
 }
 
 const List: React.FC<Props> = (props) => {
+  const {state , setState} = useContext(AppContext)
   return (
     <ListContainer>
       <ListHeader>
         <ListTitle>{ props.title }</ListTitle>
-        <DeleteList>×</DeleteList>
+        <DeleteList onClick={() => setState(() => {
+          const preValue = [...state]
+          preValue.splice(props.listIndex, 1)
+          localStorage.setItem(StorageKey, JSON.stringify(preValue))
+          return [...preValue]
+        })}>×</DeleteList>
       </ListHeader>
     </ListContainer>
   )
