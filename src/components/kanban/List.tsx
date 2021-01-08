@@ -42,6 +42,11 @@ const DeleteList = styled.div `
   }
 `
 
+const ListCounter = styled.p `
+  color: rgb(0, 140, 255);
+  padding: 15px;
+`
+
 interface Props {
   key: number
   title: string
@@ -55,6 +60,7 @@ const List: React.FC<Props> = (props) => {
     <ListContainer>
       <ListHeader>
         <ListTitle>{ title }</ListTitle>
+        <ListCounter>total: { state[listIndex].cards.length}</ListCounter>
         <DeleteList onClick={() => setState(() => {
           const preValue = [...state]
           preValue.splice(listIndex, 1)

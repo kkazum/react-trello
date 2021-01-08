@@ -46,7 +46,7 @@ const Board: React.FC = () => {
       </Header>
       <Main>
         <InfoLine>
-          All: 0 tasks
+          All: {state.length} tasks
         </InfoLine>
         <ListIndex className="info-line">
           {
