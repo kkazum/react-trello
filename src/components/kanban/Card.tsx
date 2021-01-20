@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
 import AppContext from '../contexts/AppContext'
-import { StorageKey } from '../utils'
 
 const CardContainer = styled.div `
   margin-top: 10px;
@@ -50,7 +49,6 @@ const Card = (props: Props) => {
       <CloseButton onClick={() => setState(() => {
         const preValue = [...state]
         preValue[listIndex].cards.splice(cardIndex, 1)
-        localStorage.setItem(StorageKey, JSON.stringify(preValue))
         return [...preValue]
         })
       }>×</CloseButton>

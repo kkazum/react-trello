@@ -1,9 +1,10 @@
 import React, { useContext} from 'react'
 import styled from 'styled-components'
 import AppContext from '../contexts/AppContext'
-import { Card, StorageKey } from '../utils'
+import { Card, DropResult, List } from '../utils'
 import CardAdd from './CardAdd'
 import BoardCard from './Card'
+import { Container, Draggable } from 'react-smooth-dnd'
 
 const ListContainer = styled.div `
   margin: 0 5px auto;
@@ -54,8 +55,27 @@ interface Props {
 }
 
 const List: React.FC<Props> = (props) => {
-  const {state , setState} = useContext(AppContext)
+  const { state , setState} = useContext(AppContext)
   const { title, listIndex } = props
+  const { cards } = state[listIndex]
+
+  const applyDrag = (cardArr: Array<Card>, dropResult: DropResult) => {
+    const { removedIndex, addedIndex, payload } = dropResult;
+    let itemToAdd = payload!; //getChildPayloadのため必ず存在する
+    //groupNameで跨ぐとnullがありうる
+    itemToAdd = removedIndex !== null ? cardArr.splice(removedIndex, 1)[0] : itemToAdd;
+    //groupNameで跨ぐとnullがありうる
+    addedIndex !== null && cardArr.splice(addedIndex, 0, itemToAdd);
+    return cardArr;
+  };
+
+  const onCardDrop = (prevState: Array<List>, columnId: number, dropResult: DropResult) => {
+      const newColumn: List = {...prevState[columnId]};
+      newColumn.cards = applyDrag(newColumn.cards, dropResult);
+      prevState.splice(columnId, 1, newColumn);
+      setState([...prevState]);
+  }
+
   return (
     <ListContainer>
       <ListHeader>
@@ -64,22 +84,27 @@ const List: React.FC<Props> = (props) => {
         <DeleteList onClick={() => setState(() => {
           const preValue = [...state]
           preValue.splice(listIndex, 1)
-          localStorage.setItem(StorageKey, JSON.stringify(preValue))
           return [...preValue]
         })}>×</DeleteList>
       </ListHeader>
-        {
-          state[listIndex].cards.map((ele: Card, index) => {
-            return (
-              <BoardCard
-                body={ele.body}
-                key={index}
-                cardIndex={index}
-                listIndex={listIndex}
-              />
-            )
-          })
-        }
+        <Container groupName="cards" getChildPayload={index => cards[index] } onDrop={(dropResult) => {
+            onCardDrop(state, listIndex, dropResult)
+        }}>
+          {
+            state[listIndex].cards.map((ele: Card, index) => {
+              return (
+                  <Draggable>
+                    <BoardCard
+                      body={ele.body}
+                      key={index}
+                      cardIndex={index}
+                      listIndex={listIndex}
+                    />
+                  </Draggable>
+              )
+            })
+          }
+        </Container>
       <CardAdd listIndex={listIndex} />
     </ListContainer>
   )

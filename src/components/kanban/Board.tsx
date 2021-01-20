@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import ListAdd from './ListAdd'
-import { List, StorageKey } from '../utils'
+import { List, StorageKey, DropResult } from '../utils'
 import AppContext from '../contexts/AppContext'
 import BoardList from './List'
+import { Container, Draggable } from 'react-smooth-dnd';
 
 const Wrapper = styled.main `
   background-image: url("./star.jpg");
@@ -37,6 +38,21 @@ const InfoLine = styled.p `
 
 const Board: React.FC = () => {
   const [state, setState] = useState<Array<List>>(JSON.parse(localStorage.getItem(StorageKey)!) || [])
+  useEffect(() => {
+    localStorage.setItem(StorageKey, JSON.stringify(state))
+  }, [state])
+
+  const applyDrag = (listArr: Array<List>, dropResult: DropResult) => {
+    const { removedIndex, addedIndex } = dropResult;
+    let itemToAdd = listArr.splice(removedIndex!, 1)[0]; //その場で置くとremovedIndexは1になる(nullはない)
+    listArr.splice(addedIndex!, 0, itemToAdd); //その場で置くとaddedIndexは1になる(nullはない)
+    return listArr;
+  };
+
+  const onColumnDrop = (prevState: Array<List>, dropResult: DropResult) => {
+    const state = applyDrag(prevState, dropResult);
+    setState([...state]);
+  }
 
   return (
   <AppContext.Provider value={{ state, setState }}>
@@ -49,17 +65,23 @@ const Board: React.FC = () => {
           All: {state.length} tasks
         </InfoLine>
         <ListIndex className="info-line">
-          {
-            state.map((ele: List, index) => {
-              return (
-                <BoardList
-                  title={ele.title}
-                  key={index}
-                  listIndex={index} />
-              )
-            })
-          }
-          <ListAdd />
+          <Container orientation="horizontal" onDrop={(dropResult) => {
+              onColumnDrop(state, dropResult)
+          }}>
+            {
+              state.map((ele: List, index) => {
+                return (
+                  <Draggable>
+                    <BoardList
+                      title={ele.title}
+                      key={index}
+                      listIndex={index} />
+                  </Draggable>
+                )
+              })
+            }
+            <ListAdd />
+          </Container>
         </ListIndex>
       </Main>
     </Wrapper>
