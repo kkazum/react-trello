@@ -7,7 +7,7 @@ import BoardList from './List'
 import { Container, Draggable } from 'react-smooth-dnd';
 
 const Wrapper = styled.main `
-  background-image: url("./star.jpg");
+  background-image: url("./star.jpg"), url("./star.jpg"); //チラつき防止
   background-size:  cover;
   overflow-x: scroll;
 `
